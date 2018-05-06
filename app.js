@@ -1,13 +1,23 @@
 // Requires
-import express from "express";
-import { connection } from "mongoose";
-
+var express = require('express');
+var mongoose = require('mongoose');
+var bodyParser = require('body-parser');
 
 // Inicializar variables
 var app = express();
 
+// Body Parser
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json())
 
-connection.openUri('mongodb://admin:password@ds163699.mlab.com:63699/node-api-mdb', (err, res) => {
+// Importar rutas
+var appRoutes = require("./routes/appRoute");
+var usuarioRoutes = require("./routes/usuarioRoute");
+var loginRoutes = require("./routes/loginRoute");
+
+// Conexión a la base de datos
+mongoose.connection.openUri('mongodb://admin:password@ds163699.mlab.com:63699/node-api-mdb', (err, res) => {
 
     if (err) throw err;
 
@@ -15,16 +25,10 @@ connection.openUri('mongodb://admin:password@ds163699.mlab.com:63699/node-api-md
 
 });
 
-
 // Rutas
-app.get('/', (req, res, next) => {
-
-    res.status(200).json({
-        ok: true,
-        mensaje: 'Peticion realizada correctamente'
-    });
-
-});
+app.use('/usuario', usuarioRoutes);
+app.use('/login', loginRoutes);
+app.use('/', appRoutes);
 
 
 // Escuchar peticiones
